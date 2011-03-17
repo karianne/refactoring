@@ -1,58 +1,71 @@
 package no.miles.uibinf101;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Student {
 
-    private String fornavn;
-    private String etternavn;
-    private List<Fag> fag;
+    private Navn navn;
+    private Fagliste alleFag;
+    private String rapport;
 
-    public Student(String fornavn, String etternavn) {
-        if(fornavn == null || etternavn == null) {
-            throw new IllegalArgumentException("Både fornavn og etternavn må oppgis");
-        }
+    public Student(Navn navn) {
+        this.navn = navn;
 
-        this.fornavn = fornavn;
-        this.etternavn = etternavn;
-        this.fag = new ArrayList<Fag>();
+        this.alleFag = new Fagliste();
     }
 
     public String lagKarakterutskrift() {
 
-        String rapport = "Studentrapport\n";
-        rapport += "Student: " + fornavn + " " + etternavn + "\n\n";
+        rapport = skrivOverskrift();
 
-        if(fag.size() == 0) {
-            rapport += "Ingen fag funnet";
+        if(harIngenFag()) {
+            skrivIngenFag();
         } else {
-            rapport = rapport + "Kode\tFagnavn\tKarakter\n";
-            int sumKarakterer = 0;
-            int sumStudiepoeng = 0;
-            int antallfag = 0;
-            for(Fag faget : fag) {
-                String karakter = String.valueOf(faget.getKarakter());
-                if(karakter.equals("0") || karakter.equals("1")) {
-                    karakter = "Stryk";
-                } else {
-                    sumStudiepoeng += faget.getAntallStudiepoeng();
-                    sumKarakterer += faget.getKarakter();
-                    antallfag += 1;
-                }
-                rapport += faget.getKode() + "\t" + faget.getNavn() + "\t" + karakter + "\n";
-            }
-            rapport += "\n";
-            rapport += "Gjennomsnittskarakter:" + (sumKarakterer * 1.0 / antallfag) + "\n";
-            rapport += "Antall beståtte studiepoeng:" + sumStudiepoeng + "\n";
+            skrivKaraktertabell();
         }
-
-        System.out.println(rapport);
 
         return rapport;
     }
 
+    private void skrivKaraktertabell() {
+        skrivTabelloverskrift();
+        for(Fag fag : alleFag) {
+            skrivTabellinje(fag, finnKarakterSomString(fag));
+        }
+        rapport += "\n";
+        rapport += "Gjennomsnittskarakter:" + alleFag.getGjennomsnittskarakter() + "\n";
+        rapport += "Antall beståtte studiepoeng:" + alleFag.getSumStudiepoeng() + "\n";
+    }
+
+    private String finnKarakterSomString(Fag fag) {
+        String karakter = String.valueOf(fag.getKarakter());
+        if(fag.erStryk()) {
+            karakter = "Stryk";
+        }
+        return karakter;
+    }
+
+    private void skrivTabellinje(Fag faget, String karakter) {
+        rapport += faget.getKode() + "\t" + faget.getNavn() + "\t" + karakter + "\n";
+    }
+
+    private void skrivTabelloverskrift() {
+        rapport = rapport + "Kode\tFagnavn\tKarakter\n";
+    }
+
+    private void skrivIngenFag() {
+        rapport += "Ingen fag funnet";
+    }
+
+    private boolean harIngenFag() {
+        return alleFag.size() == 0;
+    }
+
+    private String skrivOverskrift() {
+        String rapport = "Studentrapport\n";
+        rapport += "Student: " + navn.formaterFulltNavn() + "\n\n";
+        return rapport;
+    }
+
     public void leggTilFag(Fag fag) {
-        this.fag.add(fag);
+        this.alleFag.add(fag);
     }
 }

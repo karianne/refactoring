@@ -16,17 +16,17 @@ public class StudentTest {
 
     @Before
     public void setup() {
-        student = new Student(FORNAVN, ETTERNAVN);
+        student = new Student(new Navn(FORNAVN, ETTERNAVN));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void nullSomFornavnGirFeil() {
-        new Student(null, ETTERNAVN);
+        new Student(new Navn(null, ETTERNAVN));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void nullSomEtternavnGirFeil() {
-        new Student(FORNAVN, null);
+        new Student(new Navn(FORNAVN, null));
     }
 
     @Test
